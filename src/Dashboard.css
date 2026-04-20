@@ -1,12 +1,42 @@
 .dashboard-container {
+  position: relative;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+.dashboard-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.dashboard-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 10, 12, 0.72) 0%,
+    rgba(8, 10, 12, 0.82) 45%,
+    rgba(8, 10, 12, 0.88) 100%
+  );
+}
+
+.dashboard-inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  background-color: var(--bg-main); /* Reuse main background color */
-  color: var(--text-primary); /* Reuse primary text color */
-  padding: 20px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .dashboard-header {
@@ -16,17 +46,14 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 40px;
-  padding: 14px 18px;
-  border-radius: 24px;
-  background: color-mix(in srgb, var(--bg-panel) 88%, transparent);
-  border: 1px solid color-mix(in srgb, var(--border-subtle) 75%, transparent);
-  backdrop-filter: blur(12px);
+  padding: 8px 0;
 }
 
 .dashboard-header h1 {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.6rem, 3vw, 2.6rem);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55), 0 0 2px rgba(0, 0, 0, 0.8);
 }
 
 .dashboard-main {
@@ -34,9 +61,23 @@
   max-width: 900px;
 }
 
-.dashboard-main h2 {
+.dashboard-blurb {
+  margin: 0 auto 32px;
+  max-width: min(52rem, 100%);
   text-align: center;
-  margin-bottom: 30px;
+}
+
+.dashboard-blurb__text {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+  line-height: 1.55;
+  color: var(--text-primary);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.45), 0 0 1px rgba(0, 0, 0, 0.9);
+}
+
+.dashboard-section-title {
+  text-align: center;
+  margin: 0 0 30px;
   font-size: 2rem;
   color: var(--text-primary);
 }
@@ -92,7 +133,9 @@
   justify-content: center;
 }
 
-.resume-game-button, .create-game-button, .delete-game-button {
+.resume-game-button,
+.create-game-button:not(.create-game-button--slot),
+.delete-game-button {
   padding: 10px 15px;
   border-radius: 10px;
   border: none;
@@ -101,13 +144,55 @@
   transition: background-color 0.2s ease-in-out;
 }
 
-.resume-game-button, .create-game-button {
+.resume-game-button,
+.create-game-button:not(.create-game-button--slot) {
   background-color: var(--accent-soft);
   color: var(--text-primary);
 }
 
-.resume-game-button:hover, .create-game-button:hover {
+.resume-game-button:hover,
+.create-game-button:not(.create-game-button--slot):hover {
   filter: brightness(1.1);
+}
+
+/* Fourth column: matches game-card tone (not solid accent fill) */
+.create-new-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 20px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--bg-panel) 88%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--border-subtle) 55%, transparent);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease-in-out, border-color 0.2s ease;
+}
+
+.create-new-slot:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--accent-soft) 42%, var(--border-subtle));
+}
+
+.create-game-button--slot {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 65%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg-main) 32%, transparent);
+  color: var(--text-primary);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.create-game-button--slot:hover {
+  filter: none;
+  background: color-mix(in srgb, var(--accent-soft) 18%, transparent);
+  border-color: color-mix(in srgb, var(--accent-soft) 48%, var(--border-subtle));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-soft) 25%, transparent);
 }
 
 .delete-game-button {

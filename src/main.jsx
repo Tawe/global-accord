@@ -5,7 +5,7 @@ import "./styles.css";
 import "./Dashboard.css";
 import { Auth0Provider } from "@auth0/auth0-react";
 
-// TODO: Replace with your actual Auth0 domain and client ID from environment variables
+// Set VITE_AUTH0_DOMAIN and VITE_AUTH0_CLIENT_ID in .env.local (see .env.example).
 const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN || "YOUR_AUTH0_DOMAIN";
 const auth0ClientId = import.meta.env.VITE_AUTH0_CLIENT_ID || "YOUR_AUTH0_CLIENT_ID";
 

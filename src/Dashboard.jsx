@@ -5,6 +5,7 @@ import AuthButtons from './AuthButtons'; // Import AuthButtons
 import './AuthButtons.css'; // Import AuthButtons styles
 import { isFirebaseConfigured } from "./firebase";
 import { deleteGame, loadGames } from "./gameSaves";
+import openingWorld from "../images/opening-world.png";
 
 const MAX_GAMES = 3;
 const WIN_TARGET = 3;
@@ -102,15 +103,29 @@ const Dashboard = ({ onStartNewGame, onResumeGame }) => {
 
   return (
     <div className="dashboard-container">
+      <div
+        className="dashboard-backdrop"
+        style={{ backgroundImage: `url(${openingWorld})` }}
+        aria-hidden="true"
+      />
+      <div className="dashboard-inner">
       <header className="dashboard-header">
         <h1>Global Accord</h1>
         <AuthButtons />
       </header>
 
       <main className="dashboard-main">
+        <section className="dashboard-blurb" aria-label="Game summary">
+          <p className="dashboard-blurb__text">
+            You lead a climate summit with five delegations, each with its own politics and red lines.
+            Over ten turns, use subsidies, shared technology, pressure, and agreement votes to build trust,
+            satisfy each country&apos;s needs, and win enough commitments to secure an accord—before time runs out.
+          </p>
+        </section>
+
         {isAuthenticated ? (
           <>
-            <h2>Your Negotiations</h2>
+            <h2 className="dashboard-section-title">Your Negotiations</h2>
             {dashboardError && <p className="max-games-message">{dashboardError}</p>}
             <div className="game-cards-grid">
               {isLoadingGames && (
@@ -155,9 +170,15 @@ const Dashboard = ({ onStartNewGame, onResumeGame }) => {
               ))}
 
               {games.length < MAX_GAMES && games.length > 0 && (
-                <button className="create-game-button" onClick={handleCreateNewGame}>
-                  Create New Game
-                </button>
+                <div className="create-new-slot">
+                  <button
+                    type="button"
+                    className="create-game-button create-game-button--slot"
+                    onClick={handleCreateNewGame}
+                  >
+                    Create New Game
+                  </button>
+                </div>
               )}
 
               {games.length >= MAX_GAMES && (
@@ -172,6 +193,7 @@ const Dashboard = ({ onStartNewGame, onResumeGame }) => {
           </div>
         )}
       </main>
+      </div>
 
       {showConfirmDelete && (
         <div className="confirm-delete-overlay">

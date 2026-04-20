@@ -160,6 +160,19 @@ const IntroCinematic = ({ onCinematicEnd }) => {
   const [showText, setShowText] = useState(true);
   const [showImage, setShowImage] = useState(false); // Controls image fade
 
+  // Decode all frames into the browser cache so scene swaps do not flash empty pixels
+  useEffect(() => {
+    const urls = new Set();
+    for (const scene of CINEMATIC_SCENES) {
+      if (scene.image) urls.add(scene.image);
+      if (scene.backgroundImage) urls.add(scene.backgroundImage);
+    }
+    urls.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
   const currentScene = CINEMATIC_SCENES[currentSceneIndex];
   const currentText = currentScene?.textSequence[currentLineIndex];
   const isLastScene = currentSceneIndex === CINEMATIC_SCENES.length - 1;
@@ -174,13 +187,12 @@ const IntroCinematic = ({ onCinematicEnd }) => {
         onCinematicEnd();
         return;
       }
-      // Advance to next scene
-      setShowText(false); // Fade out text
+      // Advance to next scene after text fades out (no image fade-out between scenes).
+      setShowText(false);
       setTimeout(() => {
-        setShowImage(false); // Fade out image before switching scene content
         setCurrentSceneIndex((prev) => prev + 1);
         setCurrentLineIndex(0);
-      }, 500); // Wait for text to fade out
+      }, 500);
     } else {
       // Advance to next line in current scene
       setShowText(false); // Fade out current line
@@ -236,8 +248,12 @@ const IntroCinematic = ({ onCinematicEnd }) => {
     return null; // Should not happen if cinematic ends correctly
   }
 
+  // Dim any full-bleed chamber shot (room.png, no portrait composite) — index-based checks missed the last scene.
+  const isDimmedFullBleed =
+    currentScene.image === room && !currentScene.backgroundImage;
+
   return (
-    <div className="cinematic-container">
+    <div className="cinematic-container intro-cinematic">
       {currentScene.backgroundImage && (
         <img
           key={`bg-${currentSceneIndex}`}
@@ -254,12 +270,13 @@ const IntroCinematic = ({ onCinematicEnd }) => {
           className={`cinematic-image ${showImage ? 'cinematic-image-active' : ''} ${
             currentScene.composite === 'delegate'
               ? 'cinematic-image-portrait'
-              : currentSceneIndex === 2 || currentSceneIndex === 9
+              : isDimmedFullBleed
                 ? 'cinematic-image-dimmed'
                 : ''
           }`}
         />
       )}
+      <div className="intro-cinematic-scrim" aria-hidden="true" />
       <div className={`cinematic-text-overlay ${showText ? 'cinematic-text-active' : ''}`}>
         <p>{currentText}</p>
       </div>

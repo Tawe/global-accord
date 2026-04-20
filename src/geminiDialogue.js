@@ -88,27 +88,22 @@ function buildPrompt({
     })),
   };
 
+  const stateJson = JSON.stringify(payload);
+
   return [
-    "Write dialogue for one turn of a negotiation game.",
-    "Tone: serious, human, diplomatic, tense, grounded.",
-    "Keep each line to one or two sentences.",
-    `Keep the advisor opening under ${MAX_ADVISOR_OPENING_CHARS} characters.`,
-    `Keep each country line under ${MAX_COUNTRY_LINE_CHARS} characters.`,
-    `Keep the advisor summary under ${MAX_ADVISOR_SUMMARY_CHARS} characters.`,
-    "Each country must sound politically distinct.",
-    "If the action is targeted, the target should react directly and others should react as observers.",
-    "If the action is chamber-wide, everyone should react to the broader room move.",
-    "Do not invent mechanics or facts beyond the provided state.",
-    "Return ONLY plain text in exactly this format:",
-    "ADVISOR_OPENING: <text>",
-    "IRONVALE: <text>",
-    "SOLARA: <text>",
-    "DELTARA: <text>",
-    "NORDREACH: <text>",
-    "AQUALIS: <text>",
-    "ADVISOR_SUMMARY: <text>",
+    "Write dialogue for one turn of a UN climate negotiation game. Tone: serious, diplomatic, tense.",
+    `Short lines only: advisor opening ≤${MAX_ADVISOR_OPENING_CHARS} chars, each country ≤${MAX_COUNTRY_LINE_CHARS} chars, advisor summary ≤${MAX_ADVISOR_SUMMARY_CHARS} chars. One or two sentences per line.`,
+    "Targeted action: target reacts first in order; chamber action: everyone reacts to the room.",
+    "Use only facts from the JSON state. Output plain text with EXACTLY these tags in order (no markdown, no extra sections):",
+    "ADVISOR_OPENING: ...",
+    "IRONVALE: ...",
+    "SOLARA: ...",
+    "DELTARA: ...",
+    "NORDREACH: ...",
+    "AQUALIS: ...",
+    "ADVISOR_SUMMARY: ...",
     "",
-    JSON.stringify(payload, null, 2),
+    stateJson,
   ].join("\n");
 }
 
@@ -144,6 +139,25 @@ function parseTaggedResponse(text, orderedCountries) {
   };
 }
 
+function logParseFailure(text, orderedCountries) {
+  const missing = [];
+  if (!extractTaggedLine(text, "ADVISOR_OPENING")) {
+    missing.push("ADVISOR_OPENING");
+  }
+  if (!extractTaggedLine(text, "ADVISOR_SUMMARY")) {
+    missing.push("ADVISOR_SUMMARY");
+  }
+  for (const country of orderedCountries) {
+    if (!extractTaggedLine(text, country.id.toUpperCase())) {
+      missing.push(country.id.toUpperCase());
+    }
+  }
+  console.warn(
+    "[Gemini] Response did not include all required tags; using built-in dialogue. Missing:",
+    missing.join(", ") || "(unknown)"
+  );
+}
+
 export function isGeminiConfigured() {
   return Boolean(GEMINI_API_KEY);
 }
@@ -172,8 +186,9 @@ export async function generateTurnDialogue(input) {
           },
         ],
         generationConfig: {
-          temperature: 0.9,
-          maxOutputTokens: 500,
+          temperature: 0.85,
+          // Seven tagged blocks; must complete before STOP. 1200 still hit MAX_TOKENS on long replies.
+          maxOutputTokens: 8192,
         },
       }),
     }
@@ -184,11 +199,32 @@ export async function generateTurnDialogue(input) {
   }
 
   const result = await response.json();
-  const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-  if (typeof text !== "string") {
+  if (!result?.candidates?.length) {
+    console.warn(
+      "[Gemini] No response candidates (blocked, quota, or model error). Using built-in dialogue.",
+      result?.promptFeedback ?? result?.error ?? ""
+    );
     return null;
   }
 
-  return parseTaggedResponse(text, input.orderedCountries);
+  const candidate = result.candidates[0];
+  const text = candidate?.content?.parts?.[0]?.text;
+  const hitTokenLimit = candidate?.finishReason === "MAX_TOKENS";
+
+  if (typeof text !== "string") {
+    console.warn("[Gemini] Empty text in response. Using built-in dialogue.");
+    return null;
+  }
+
+  const parsed = parseTaggedResponse(text, input.orderedCountries);
+  if (!parsed) {
+    logParseFailure(text, input.orderedCountries);
+    if (hitTokenLimit) {
+      console.warn(
+        "[Gemini] Response truncated (MAX_TOKENS) before all tags were written. If this persists, shorten per-line limits in geminiDialogue.js or simplify the prompt."
+      );
+    }
+  }
+  return parsed;
 }

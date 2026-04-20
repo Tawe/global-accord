@@ -2,94 +2,157 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 // Image imports
 import advisorPortrait from '../images/advisor-nobg.png';
+import endingBadCollapse from '../images/ending-bad-collapse.png';
+import endingBadConsequences from '../images/ending-bad-consequences.png';
+import endingConsensusChamber from '../images/ending-consensus-chamber.png';
+import endingConsensusHistoric from '../images/ending-consensus-historic.png';
+import endingNarrowAccord from '../images/ending-narrow-accord.png';
+import endingNarrowFragile from '../images/ending-narrow-fragile.png';
+import endingNeutralSplit from '../images/ending-neutral-split.png';
+import endingNeutralStalled from '../images/ending-neutral-stalled.png';
+import endingStrongCoalition from '../images/ending-strong-coalition.png';
+import endingStrongDurable from '../images/ending-strong-durable.png';
 import room from '../images/room.png';
 
 const ENDING_SCENES = {
-  good: [
+  narrow: [
     {
-      image: room, // Council chamber, lit, delegates seated
+      image: endingNarrowAccord,
+      textSequence: ["The accord held.", "Just barely."],
+      timing: 1500,
+      imageClass: "ending-image-good"
+    },
+    {
+      image: endingNarrowFragile,
+      textSequence: ["Enough countries moved.", "Not enough to calm the whole room."],
+      timing: 1500,
+    },
+    {
+      image: endingNarrowFragile,
+      textSequence: ["The deal survived.", "Its future is still fragile."],
+      timing: 1500,
+    },
+    {
+      image: endingNarrowFragile,
+      textSequence: ["Movement begins.", "But the coalition is thin."],
+      timing: 1500,
+    },
+    {
+      image: endingNarrowFragile,
+      textSequence: ["It may be enough.", "If it holds."],
+      timing: 2000,
+    },
+  ],
+  strong: [
+    {
+      image: endingStrongCoalition,
       textSequence: ["Against the odds…", "they agreed."],
       timing: 1500,
       imageClass: "ending-image-good"
     },
     {
-      image: null, // Papers signed, hands across table - placeholder or abstract
-      textSequence: ["Not everyone is satisfied.", "No one gets everything."],
+      image: endingStrongDurable,
+      textSequence: ["The room did not unify.", "But the coalition became durable."],
       timing: 1500,
     },
     {
-      image: null, // Industry slowing / transition visuals - placeholder or abstract
-      textSequence: ["Some economies strain.", "Some risks remain."],
+      image: endingStrongDurable,
+      textSequence: ["The agreement has weight.", "It can survive first contact with politics."],
       timing: 1500,
     },
     {
-      image: null, // Renewables, rebuilding, mixed progress - placeholder or abstract
-      textSequence: ["But movement begins.", "For the first time… together."],
+      image: endingStrongDurable,
+      textSequence: ["This was no miracle.", "It was negotiation done well."],
       timing: 1500,
     },
     {
-      image: null, // Earth, slightly brighter
-      textSequence: ["It may be enough.", "If it holds."],
+      image: endingStrongDurable,
+      textSequence: ["It may be enough.", "And this time it has backing."],
       timing: 2000,
-      imageClass: "ending-image-earth-bright"
+    },
+  ],
+  consensus: [
+    {
+      image: endingConsensusChamber,
+      textSequence: ["Against the odds…", "the whole chamber moved."],
+      timing: 1500,
+      imageClass: "ending-image-good"
+    },
+    {
+      image: endingConsensusHistoric,
+      textSequence: ["Not because conflict vanished.", "But because no one was left outside the deal."],
+      timing: 1500,
+    },
+    {
+      image: endingConsensusHistoric,
+      textSequence: ["Industry, development, urgency, and caution all found a place at the table."],
+      timing: 1500,
+    },
+    {
+      image: endingConsensusHistoric,
+      textSequence: ["This is what a historic summit looks like."],
+      timing: 1500,
+    },
+    {
+      image: endingConsensusHistoric,
+      textSequence: ["For once…", "they agreed together."],
+      timing: 2000,
     },
   ],
   neutral: [
     {
-      image: room, // Some seats empty
+      image: endingNeutralSplit,
       textSequence: ["Some agreed.", "Others did not."],
       timing: 1500,
       imageClass: "ending-image-neutral"
     },
     {
-      image: null, // Split visuals between countries - placeholder or abstract
+      image: endingNeutralStalled,
       textSequence: ["The room never fully aligned."],
       timing: 1500,
     },
     {
-      image: null, // Ongoing emissions, slow change - placeholder or abstract
+      image: endingNeutralStalled,
       textSequence: ["Progress continues…", "but not fast enough."],
       timing: 1500,
     },
     {
-      image: null, // Climate impact scenes - placeholder or abstract
+      image: endingNeutralStalled,
       textSequence: ["The cost keeps rising."],
       timing: 1500,
     },
     {
-      image: null, // Earth, unchanged or dimmer
+      image: endingNeutralStalled,
       textSequence: ["The problem remains."],
       timing: 2000,
-      imageClass: "ending-image-earth-dim"
     },
   ],
   bad: [
     {
-      image: room, // Empty chamber / chairs pushed back
+      image: endingBadCollapse,
       textSequence: ["The talks collapsed."],
       timing: 1500,
       imageClass: "ending-image-bad"
     },
     {
-      image: null, // Delegates leaving / tension - placeholder or abstract
+      image: endingBadConsequences,
       textSequence: ["Trust broke.", "Positions hardened."],
       timing: 1500,
     },
     {
-      image: null, // Heavy industry, rising emissions - placeholder or abstract
+      image: endingBadConsequences,
       textSequence: ["Each country turned inward."],
       timing: 1500,
     },
     {
-      image: null, // Severe climate events - placeholder or abstract
+      image: endingBadConsequences,
       textSequence: ["The consequences accelerate."],
       timing: 1500,
     },
     {
-      image: null, // Darkened Earth
+      image: endingBadConsequences,
       textSequence: ["Everyone understood the problem.", "No one could agree."],
       timing: 2000,
-      imageClass: "ending-image-earth-dark"
     },
   ],
 };
@@ -244,13 +307,14 @@ const EndingCinematic = ({ endingType, finalGameState, onCinematicEnd }) => {
   const [showImage, setShowImage] = useState(false);
   const [showPersonalizedEnding, setShowPersonalizedEnding] = useState(false);
 
-  const scenes = ENDING_SCENES[endingType];
-  const currentScene = scenes?.[currentSceneIndex];
-  const currentText = currentScene?.textSequence[currentLineIndex];
+  const scenes = ENDING_SCENES[endingType] ?? ENDING_SCENES.neutral;
+  const currentScene = scenes[currentSceneIndex];
+  const lineCount = currentScene?.textSequence?.length ?? 0;
+  const currentText = currentScene?.textSequence?.[currentLineIndex];
   const isLastScene = currentSceneIndex === scenes.length - 1;
-  const isLastLineInScene = currentLineIndex === currentScene?.textSequence.length - 1;
+  const isLastLineInScene = lineCount > 0 && currentLineIndex === lineCount - 1;
 
-  const committedCountries = finalGameState?.countries.filter(c => c.committed) || [];
+  const committedCountries = finalGameState?.countries?.filter(c => c.committed) || [];
   const advisorLine = getAdvisorLine(endingType, committedCountries, finalGameState);
   const callouts = generateCallouts(endingType, committedCountries, finalGameState);
   const coalitionSummary =

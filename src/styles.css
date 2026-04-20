@@ -49,7 +49,10 @@ button {
 
 .game-shell {
   min-height: 100vh;
-  padding: 5px 24px 210px;
+  padding-top: max(16px, env(safe-area-inset-top, 0px));
+  padding-right: 24px;
+  padding-bottom: 210px;
+  padding-left: 24px;
   position: relative;
   overflow: hidden;
 }
@@ -59,10 +62,10 @@ button {
   z-index: 2;
   display: flex;
   justify-content: space-between;
-  gap: 18px;
-  align-items: flex-start;
-  padding: 14px 18px;
-  border-radius: 24px;
+  gap: 14px;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 18px;
   background: color-mix(in srgb, var(--bg-panel) 88%, transparent);
   border: 1px solid color-mix(in srgb, var(--border-subtle) 75%, transparent);
   backdrop-filter: blur(12px);
@@ -71,7 +74,8 @@ button {
 .top-bar h1 {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.6rem, 3vw, 2.6rem);
+  font-size: clamp(1.25rem, 2.4vw, 2rem);
+  line-height: 1.15;
 }
 
 .top-copy {
@@ -81,14 +85,14 @@ button {
 
 .meta-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 10px;
-  width: min(460px, 100%);
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+  gap: 8px;
+  width: min(420px, 100%);
 }
 
 .meta-pill {
-  padding: 12px 14px;
-  border-radius: 18px;
+  padding: 6px 10px;
+  border-radius: 14px;
   background: color-mix(in srgb, var(--bg-panel) 82%, transparent);
   border: 1px solid color-mix(in srgb, var(--border-subtle) 70%, transparent);
 }
@@ -96,18 +100,19 @@ button {
 .meta-pill span {
   display: block;
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
 }
 
 .meta-pill strong {
   display: block;
-  margin-top: 8px;
-  font-size: 1.1rem;
+  margin-top: 4px;
+  font-size: 0.98rem;
 }
 
 .board-stage {
   position: relative;
-  height: min(68vh, 760px);
+  /* Ensure the arc fits vertically; center seat was overflowing short viewports */
+  height: max(min(68vh, 760px), 540px);
   margin-top: 18px;
 }
 
@@ -167,27 +172,27 @@ button {
 
 .seat-1 {
   left: 7%;
-  bottom: 170px;
+  bottom: 158px;
 }
 
 .seat-2 {
   left: 24%;
-  bottom: 290px;
+  bottom: 252px;
 }
 
 .seat-3 {
   left: 41%;
-  bottom: 338px;
+  bottom: 292px;
 }
 
 .seat-4 {
   right: 24%;
-  bottom: 290px;
+  bottom: 252px;
 }
 
 .seat-5 {
   right: 7%;
-  bottom: 170px;
+  bottom: 158px;
 }
 
 .country-avatar {
@@ -301,7 +306,7 @@ button {
   bottom: 5px;
   z-index: 10;
   display: grid;
-  grid-template-columns: 124px minmax(0, 1.35fr) minmax(250px, 0.9fr);
+  grid-template-columns: 124px minmax(0, 1fr) minmax(0, 1fr);
   gap: 16px;
   align-items: stretch;
   padding: 12px 16px;
@@ -758,6 +763,7 @@ button {
   z-index: 1000; /* Ensure it's on top of everything */
   overflow: hidden;
   cursor: pointer;
+  isolation: isolate;
 }
 
 .cinematic-image {
@@ -770,6 +776,11 @@ button {
   opacity: 0;
   transition: opacity 1s ease-in-out, transform 1.2s ease-in-out, filter 1.2s ease-in-out;
   will-change: transform, opacity, filter;
+  z-index: 1;
+}
+
+.cinematic-image.cinematic-image-background {
+  z-index: 0;
 }
 
 .cinematic-image-active {
@@ -794,18 +805,38 @@ button {
   transform: translateX(-50%);
   object-fit: contain;
   object-position: center bottom;
-  z-index: 1000;
+  z-index: 2;
   filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.45));
 }
 
+/* Intro only: darken bright art between imagery and copy (EndingCinematic omits intro-cinematic) */
+.intro-cinematic-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.28) 0%,
+    rgba(0, 0, 0, 0.42) 45%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  pointer-events: none;
+}
+
 .cinematic-text-overlay {
-  position: relative;
-  z-index: 1001;
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 20px;
   text-align: center;
   font-size: clamp(1.8rem, 4vw, 3rem);
   color: var(--text-primary);
-  padding: 20px;
-  max-width: 80%;
+  max-width: none;
+  width: 100%;
   line-height: 1.4;
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
@@ -813,10 +844,12 @@ button {
     0 2px 10px rgba(0, 0, 0, 0.92),
     0 0 24px rgba(0, 0, 0, 0.72),
     0 0 2px rgba(0, 0, 0, 0.95);
+  pointer-events: none;
 }
 
 .cinematic-text-overlay p {
   margin: 0;
+  max-width: 80%;
   -webkit-text-stroke: 0.45px rgba(0, 0, 0, 0.45);
 }
 
@@ -847,7 +880,7 @@ button {
   height: 100vh; /* Full viewport height */
   background-color: var(--bg-main); /* Use main background color */
   z-index: 1000; /* Ensure it's on top of other content */
-  padding: 20px; /* Add some padding */
+  padding: 0;
   box-sizing: border-box; /* Include padding in width/height calculation */
 }
 
@@ -859,14 +892,16 @@ button {
   position: relative;
   z-index: 1001;
   display: grid;
-  grid-template-columns: minmax(160px, 240px) minmax(0, 1fr);
+  grid-template-columns: minmax(180px, 240px) minmax(520px, 760px);
   align-items: center;
+  justify-content: center;
+  align-content: center;
   gap: 28px;
   width: 100%; /* Make it full width of its parent */
   height: 100%; /* Make it full height of its parent */
-  padding: 34px 36px;
+  padding: 40px 48px;
   background-color: rgba(9, 10, 10, 0.64);
-  border: 1px solid rgba(231, 224, 211, 0.12);
+  border: none;
   border-radius: 0; /* Remove border-radius for full screen panel */
   box-shadow: none; /* Remove box-shadow for full screen panel */
   backdrop-filter: blur(8px);
@@ -884,12 +919,13 @@ button {
   max-height: 360px;
   object-fit: contain;
   object-position: center bottom;
+  transform: scaleX(-1);
   filter: drop-shadow(0 24px 28px rgba(0, 0, 0, 0.42));
 }
 
 .ending-personalized-content {
   text-align: left;
-  max-width: 700px;
+  max-width: 760px;
 }
 
 .advisor-line {
@@ -952,13 +988,15 @@ button {
   .ending-personalized-panel {
     grid-template-columns: 1fr;
     gap: 18px;
+    justify-content: center;
+    align-content: center;
     padding: 24px 22px;
-    width: min(760px, calc(100vw - 32px));
+    width: 100%;
   }
 
   .ending-personalized-media {
     min-height: 0;
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   .ending-personalized-portrait {
@@ -967,7 +1005,7 @@ button {
   }
 
   .ending-personalized-content {
-    text-align: left;
+    text-align: center;
   }
 }
 
