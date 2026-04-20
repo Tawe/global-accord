@@ -535,8 +535,8 @@ button {
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(10, 10, 8, 0.62);
-  backdrop-filter: blur(6px);
+  /* Solid scrim instead of backdrop-filter: blur repaints the whole viewport on fast scroll inside the modal and flickers (esp. with body fixed backgrounds). */
+  background: rgba(10, 10, 8, 0.82);
 }
 
 .action-help-modal {
@@ -548,6 +548,9 @@ button {
   border-radius: 20px;
   background: var(--bg-panel);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  isolation: isolate;
+  transform: translateZ(0);
+  -webkit-overflow-scrolling: touch;
 }
 
 .action-help-modal__header {
