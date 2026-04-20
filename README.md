@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./githubheader.png" alt="Global Accord" width="100%" />
+  <img src="./images/githubheader.png" alt="Global Accord" width="100%" />
 </p>
 
 # Global Accord
