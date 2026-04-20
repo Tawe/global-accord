@@ -1,0 +1,22 @@
+{
+  "name": "global-accord",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@auth0/auth0-react": "^2.16.2",
+    "firebase": "^12.12.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "4.3.1",
+    "playwright": "^1.59.1",
+    "vite": "5.4.8"
+  }
+}

@@ -1,0 +1,44 @@
+.auth-buttons-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-greeting {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.auth-button {
+  padding: 8px 15px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.login-button {
+  background-color: var(--accent-soft); /* Reusing accent color */
+  color: var(--bg-main);
+}
+
+.login-button:hover {
+  filter: brightness(1.1);
+}
+
+.logout-button {
+  background-color: var(--border-subtle); /* A more neutral color */
+  color: var(--text-primary);
+}
+
+.logout-button:hover {
+  filter: brightness(1.1);
+}
+
+.auth-loading {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}

@@ -1,0 +1,187 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--bg-main); /* Reuse main background color */
+  color: var(--text-primary); /* Reuse primary text color */
+  padding: 20px;
+}
+
+.dashboard-header {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding: 14px 18px;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--bg-panel) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 75%, transparent);
+  backdrop-filter: blur(12px);
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.6rem, 3vw, 2.6rem);
+}
+
+.dashboard-main {
+  width: 100%;
+  max-width: 900px;
+}
+
+.dashboard-main h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  color: var(--text-primary);
+}
+
+.game-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.game-card, .empty-state-card {
+  background: color-mix(in srgb, var(--bg-panel) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 75%, transparent);
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease-in-out;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+}
+
+.game-card h3 {
+  margin-top: 0;
+  color: var(--text-primary);
+}
+
+.game-card p {
+  margin: 8px 0;
+  color: var(--text-muted);
+}
+
+.game-card p strong {
+    color: var(--text-primary);
+}
+
+.outlook-stable { color: var(--status-support); font-weight: bold; }
+.outlook-unstable { color: var(--status-conditional); font-weight: bold; }
+.outlook-collapsing { color: var(--status-reject); font-weight: bold; }
+
+.last-played {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.card-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.resume-game-button, .create-game-button, .delete-game-button {
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.resume-game-button, .create-game-button {
+  background-color: var(--accent-soft);
+  color: var(--text-primary);
+}
+
+.resume-game-button:hover, .create-game-button:hover {
+  filter: brightness(1.1);
+}
+
+.delete-game-button {
+  background-color: var(--status-reject);
+  color: var(--text-primary);
+}
+
+.delete-game-button:hover {
+  filter: brightness(1.1);
+}
+
+.empty-state-card {
+  grid-column: 1 / -1; /* Span across all columns */
+  padding: 50px 20px;
+  background: color-mix(in srgb, var(--bg-panel) 70%, transparent);
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--border-subtle) 50%, transparent);
+}
+
+.empty-state-card p {
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.max-games-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.confirm-delete-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.confirm-delete-dialog {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+  max-width: 400px;
+}
+
+.confirm-delete-dialog p {
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+}
+
+.dialog-actions button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.dialog-actions button:first-child {
+  background-color: var(--status-reject);
+  color: var(--text-primary);
+}
+
+.dialog-actions button:last-child {
+  background-color: var(--border-subtle);
+  color: var(--text-primary);
+}
